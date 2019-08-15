@@ -1,0 +1,72 @@
+﻿方法二：
+
+1、如果不想让程序在任务栏中显示，请把窗体的属性ShowInTaskbar设置为false;
+2、如果想让程序启动时就最小化，请设置窗体的属性WindowState设置为Minimized。(Minimized 最小化，Normal正常启动，Maximized最大化)
+3、拉一个NotifyIcon控件notifyIcon，为控件notifyIcon的属性Icon添加一个icon图标。
+4、可以为NotifyIcon加一个ContextMenuStrip右键菜单menu_Notify。
+5、本例子禁用了窗体最大化按钮。(设置窗体的属性MaximizeBox的属性为false)
+6、主要代码：
+#region 私有方法　处理窗体的　显示　隐藏　关闭(退出)
+private void ExitMainForm()
+{
+if (MessageBox.Show("您确定要退出化验数据接收程序吗？", "确认退出", MessageBoxButtons.OKCancel, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.OK)
+{
+this.notifyIcon.Visible = false;
+this.Close();
+this.Dispose();
+Application.Exit();
+}
+}
+private void HideMainForm()
+{
+this.Hide();
+}
+private void ShowMainForm()
+{
+this.Show();
+this.WindowState = FormWindowState.Normal;
+this.Activate();
+}
+#endregion#region 右键菜单处理，显示　隐藏　退出
+private void menuItem_Show_Click(object sender, EventArgs e)
+{
+ShowMainForm();
+}
+private void menuItem_Hide_Click(object sender, EventArgs e)
+{
+HideMainForm();
+}
+private void menuItem_Exit_Click(object sender, EventArgs e)
+{
+ExitMainForm();
+}
+#endregion#region 双击托盘上图标时，显示窗体
+private void notifyIcon_DoubleClick(object sender, EventArgs e)
+{
+if (this.WindowState == FormWindowState.Normal)
+{
+this.WindowState = FormWindowState.Minimized;
+HideMainForm();
+}
+else if(this.WindowState == FormWindowState.Minimized)
+{
+ShowMainForm();
+}
+}
+#endregion
+#region 点最小化按钮时，最小化到托盘
+private void frmMain_SizeChanged(object sender, EventArgs e)
+{
+if (this.WindowState == FormWindowState.Minimized)
+{
+HideMainForm();
+}
+}
+#endregion
+#region 窗体关闭时最小化到托盘
+private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+{
+e.Cancel = true;
+HideMainForm();
+}
+#endregion
